@@ -24,7 +24,8 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 	protected ProcessServerImpl() throws RemoteException {
 		super();
 //		initProcessEngine("VacationRequest", "vacationRequest");
-		initProcessEngine("SimpleVacationRequest", "vacationRequest");
+//		initProcessEngine("SimpleVacationRequest", "vacationRequest");
+		initProcessEngine("FinancialReport", "financialReport");
 	}
 	
 	private void initProcessEngine(String processName, String processId) {
