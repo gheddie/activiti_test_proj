@@ -2,11 +2,16 @@ package de.gravitex.test;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
+
+import org.activiti.engine.task.Task;
 
 public interface ProcessServerRemote extends Remote {
 
-	public boolean isLoginValid(String userName) throws RemoteException;
+	public void startProcessInstance(String processName, String processId) throws RemoteException;
 	
-	public void completeTask(String taskId, Map<String, Object> taskVariables, String groupName) throws RemoteException;
+	public void completeTask(String taskId, Map<String, Object> taskVariables) throws RemoteException;
+	
+	public List<Task> getTaskyForUserGroup(String groupName) throws RemoteException;
 }
