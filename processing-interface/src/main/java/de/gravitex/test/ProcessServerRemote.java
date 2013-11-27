@@ -8,5 +8,5 @@ public interface ProcessServerRemote extends Remote {
 
 	public boolean isLoginValid(String userName) throws RemoteException;
 	
-	public void completeTask(String taskId, Map<String, Object> taskVariables) throws RemoteException;
+	public void completeTask(String taskId, Map<String, Object> taskVariables, String groupName) throws RemoteException;
 }

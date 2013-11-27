@@ -55,9 +55,9 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 		return (userName.equals("peter.pan"));		
 	}
 
-	public void completeTask(String taskId, Map<String, Object> taskVariables) throws RemoteException {
+	public void completeTask(String taskId, Map<String, Object> taskVariables, String groupName) throws RemoteException {
 		System.out.println("completing task '"+taskId+"'...");
-		Task task = getNextTaskToDo("management");
+		Task task = getNextTaskToDo(groupName);
 		if (task != null) {
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put("vacationApproved", "false");

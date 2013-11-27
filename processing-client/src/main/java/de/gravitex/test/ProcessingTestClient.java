@@ -14,11 +14,7 @@ public class ProcessingTestClient {
 		Registry registry = LocateRegistry.getRegistry("localhost", RMIConstants.RMI_PORT);
 		ProcessServerRemote remote = (ProcessServerRemote) registry.lookup(RMIConstants.RMI_ID);
 		
-//		System.out.println(remote.isLoginValid("peter.pan"));
-//		System.out.println(remote.isLoginValid("sdf�lksdf"));
-//		System.out.println(remote.isLoginValid(""));
-//		System.out.println(remote.isLoginValid(null));
-		
-		remote.completeTask(null, null);
+//		remote.completeTask(null, null, "accountancy");
+		remote.completeTask(null, null, "management");
 	}
 }
