@@ -4,9 +4,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.List;
-
-import org.activiti.engine.task.Task;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProcessingTestClient {
 
@@ -19,14 +18,16 @@ public class ProcessingTestClient {
 //		processServer.startProcessInstance("SimpleVacationRequest", "vacationRequest");
 //		processServer.startProcessInstance("FinancialReport", "financialReport");
 
-		List<Task> openTasks = processServer.getTaskyForUserGroup("management");
-		System.out.println(openTasks.size() + " open tasks.");
-		for (Task task : openTasks) {
-			System.out.println(task.getName() + "["+task.getId()+"]");
-		}
+//		List<Task> openTasks = processServer.getTaskyForUserGroup("management");
+//		System.out.println(openTasks.size() + " open tasks.");
+//		for (Task task : openTasks) {
+//			System.out.println(task.getName() + "["+task.getId()+"]");
+//		}
 		
 		//---
 		
-//		processServer.completeTask("25", null);
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("vacationApproved", true);
+		processServer.completeTask("12", parameters);
 	}
 }

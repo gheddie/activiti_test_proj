@@ -5,8 +5,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import de.gravitex.test.RMIConstants;
-
 public class ProcessServer {
 
 	public static void main(String[] args) throws RemoteException, AlreadyBoundException {
