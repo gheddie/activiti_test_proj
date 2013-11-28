@@ -10,8 +10,11 @@ import org.activiti.engine.task.Task;
 public class ProcessTable extends JTable {
 
 	private static final long serialVersionUID = 1L;
+	
+	private List<Task> taskModel;
 
 	public void setData(List<Task> tasks) {
+		this.taskModel = tasks;
 		Object[][] rowData = new Object[tasks.size()][2];
 		Object[] singleRow = null;
 		int rowIndex = 0;
@@ -23,5 +26,9 @@ public class ProcessTable extends JTable {
 		Object[] columnNames = { "Name der Aufgabe", "Prozess-ID" };
 		DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
 		setModel(model);
+	}
+
+	public Task getSelectedTask() {
+		return taskModel.get(getSelectedRow());
 	}
 }

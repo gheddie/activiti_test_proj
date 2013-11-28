@@ -39,6 +39,8 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 	private JButton btnStart;
 
 	private JButton btnFetchTasks;
+	
+	private JButton btnfinishTask;
 
 	private ProcessTable tbProcesses;
 	
@@ -49,6 +51,8 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 	private ProcessServerRemote processServer;
 
 	private String groupName;
+
+	private Task selectedTask;
 
 	public ProcessGUIClient(String groupName) {
 		super();
@@ -65,7 +69,8 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {
-					processServer.startProcessInstance("VacationRequest", "vacationRequest");
+//					processServer.startProcessInstance("VacationRequest", "vacationRequest");
+					processServer.startProcessInstance("SimpleVacationRequest", "vacationRequest");
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
@@ -87,6 +92,22 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 				}
 			}
 		});
+		// ------------------------------------------------
+		btnfinishTask = new JButton("finish task");
+		btnfinishTask.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (selectedTask == null) {
+					return;
+				}
+				try {
+					processServer.completeTask(selectedTask.getId(), null);
+					fillTasks();
+					selectedTask = null;
+				} catch (RemoteException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 		// ------------------------------------------------		
 		tbProcesses = new ProcessTable();
 		tbProcesses.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  
@@ -96,9 +117,18 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 		// ------------------------------------------------
 		tbMain.add(btnStart);
 		tbMain.add(btnFetchTasks);
+		tbMain.add(btnfinishTask);
 		add(tbMain, BorderLayout.NORTH);
 		// ------------------------------------------------
 		setVisible(true);
+	}
+	
+	private void fillTasks() {
+		try {
+			tbProcesses.setData(processServer.getTaskyForUserGroup(groupName));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}				
 	}
 	
 	private void fillTasks(List<Task> tasks) {
@@ -126,6 +156,7 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 
 	public void mouseClicked(MouseEvent e) {
 		System.out.println("click...");
+		selectedTask = tbProcesses.getSelectedTask();
 	}
 
 	public void mousePressed(MouseEvent e) {
