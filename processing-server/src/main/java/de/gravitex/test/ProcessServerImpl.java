@@ -37,6 +37,8 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 		variables.put("vacationMotivation", "I'm really tired!");
 		RuntimeService runtimeService = processEngine.getRuntimeService();
 		runtimeService.startProcessInstanceByKey(processId, variables);
+		
+		System.out.println("process instance '"+processId+"' started.");
 	}
 	
 	public void completeTask(String taskId, Map<String, Object> taskVariables) throws RemoteException {
