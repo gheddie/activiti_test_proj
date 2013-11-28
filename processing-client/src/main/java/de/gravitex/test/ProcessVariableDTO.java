@@ -2,11 +2,11 @@ package de.gravitex.test;
 
 public class ProcessVariableDTO {
 	
-	public ProcessVariableDTO(String fieldName, Object fieldValue, Class<?> fieldClass) {
+	public ProcessVariableDTO(String fieldName, String fieldValueAsString, Class<?> fieldClass) {
 		super();
 		this.fieldName = fieldName;
-		this.fieldValue = fieldValue;
 		this.fieldClass = fieldClass;
+		this.fieldValue = ProcessingParserUtil.parseValue(fieldValueAsString, fieldClass);
 	}
 
 	private String fieldName;

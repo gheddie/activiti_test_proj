@@ -10,6 +10,6 @@ public class ProcessingTestClientStarter {
 	public static void main(String[] args) throws RemoteException, NotBoundException {
 		new ProcessTestView().setVisible(true);
 		//---
-//		ParserUtil.parseVariable("approved#true#java.lang.Boolean");
+//		ParserUtil.parseVariable("vacationApproved#true#java.lang.Boolean");
 	}
 }

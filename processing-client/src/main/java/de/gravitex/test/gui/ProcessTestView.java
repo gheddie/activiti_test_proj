@@ -18,7 +18,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -26,23 +28,19 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.border.TitledBorder;
-import de.gravitex.test.gui.component.*;
 
 import org.activiti.engine.task.Task;
 
-import de.gravitex.test.ParserUtil;
 import de.gravitex.test.ProcessServerRemote;
 import de.gravitex.test.ProcessVariableDTO;
+import de.gravitex.test.ProcessingParserUtil;
 import de.gravitex.test.RMIConstants;
 import de.gravitex.test.gui.component.ProcessTable;
+import de.gravitex.test.gui.component.VariablesTable;
 
-/**
- * @author User #1
- */
 public class ProcessTestView extends JFrame implements MouseListener {
 	
 	private static final long serialVersionUID = 1L;
@@ -85,7 +83,7 @@ public class ProcessTestView extends JFrame implements MouseListener {
 					return;
 				}
 				try {
-					processServer.completeTask(selectedTask.getId(), null);
+					processServer.completeTask(selectedTask.getId(), getProcessVariables());
 					fillTasks();
 					
 				} catch (Exception e1) {
@@ -100,7 +98,7 @@ public class ProcessTestView extends JFrame implements MouseListener {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("add variable...");
 				try {
-					processVariables.add(ParserUtil.parseVariable(tfParseVariables.getText()));
+					processVariables.add(ProcessingParserUtil.parseVariable(tfParseVariables.getText()));
 					fillVariables();
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(ProcessTestView.this, "Unable to parse : '"+tfParseVariables.getText()+"'.");
@@ -117,6 +115,14 @@ public class ProcessTestView extends JFrame implements MouseListener {
 		});		
 		//---
 		tbTasks.addMouseListener(this);
+	}
+	
+	private Map<String, Object> getProcessVariables() {
+		Map<String, Object> variables = new HashMap<>();
+		for (ProcessVariableDTO dto : processVariables) {
+			variables.put(dto.getFieldName(), dto.getFieldValue());
+		}
+		return variables;
 	}
 	
 	private void fillVariables() {
