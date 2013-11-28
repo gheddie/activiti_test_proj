@@ -32,6 +32,7 @@ import org.w3c.dom.NodeList;
 
 import de.gravitex.test.ProcessServerRemote;
 import de.gravitex.test.RMIConstants;
+import de.gravitex.test.gui.component.ProcessTable;
 
 public class ProcessGUIClient extends JFrame implements MouseListener {
 

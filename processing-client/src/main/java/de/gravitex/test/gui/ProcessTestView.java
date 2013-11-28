@@ -4,7 +4,11 @@
 
 package de.gravitex.test.gui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -13,29 +17,47 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.border.TitledBorder;
+import de.gravitex.test.gui.component.*;
 
 import org.activiti.engine.task.Task;
 
+import de.gravitex.test.ParserUtil;
 import de.gravitex.test.ProcessServerRemote;
+import de.gravitex.test.ProcessVariableDTO;
 import de.gravitex.test.RMIConstants;
+import de.gravitex.test.gui.component.ProcessTable;
 
 /**
  * @author User #1
  */
 public class ProcessTestView extends JFrame implements MouseListener {
 	
+	private static final long serialVersionUID = 1L;
+
 	private ProcessServerRemote processServer;
 	
 	private Task selectedTask;
+	
+	private List<ProcessVariableDTO> processVariables;
 	
 	public ProcessTestView() {
 		initComponents();
 		setSize(800, 600);
 		setTitle("Prozess-Steuerung");
-		initProcessEngine();
+		init();
 		putListeners();
 	}
 	
@@ -43,7 +65,7 @@ public class ProcessTestView extends JFrame implements MouseListener {
 		btnStartInstance.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					processServer.startProcessInstance("SimpleVacationRequest", "vacationRequest");
+					processServer.startProcessInstance("VacationRequest", "vacationRequest");
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
 				}
@@ -74,7 +96,31 @@ public class ProcessTestView extends JFrame implements MouseListener {
 			}
 		});		
 		//---
+		btnAddVariable.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("add variable...");
+				try {
+					processVariables.add(ParserUtil.parseVariable(tfParseVariables.getText()));
+					fillVariables();
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(ProcessTestView.this, "Unable to parse : '"+tfParseVariables.getText()+"'.");
+				}				
+			}
+		});		
+		//---
+		btnResetVariables.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("reset variables...");
+				processVariables.clear();
+				fillVariables();
+			}
+		});		
+		//---
 		tbTasks.addMouseListener(this);
+	}
+	
+	private void fillVariables() {
+		tbVariables.setData(processVariables);				
 	}
 	
 	private void fillTasks() {
@@ -85,8 +131,9 @@ public class ProcessTestView extends JFrame implements MouseListener {
 		}				
 	}
 
-	private void initProcessEngine() {
-		Registry registry;
+	private void init() {
+		//process engine
+		Registry registry = null;
 		try {
 			registry = LocateRegistry.getRegistry("localhost", RMIConstants.RMI_PORT);
 			processServer = (ProcessServerRemote) registry.lookup(RMIConstants.RMI_ID);
@@ -94,6 +141,8 @@ public class ProcessTestView extends JFrame implements MouseListener {
 			// e.printStackTrace();
 			System.out.println("Fehler beim Initialisieren : " + e.getMessage());
 		}
+		//other stuff
+		processVariables = new ArrayList<>();
 	}
 
 	private void initComponents() {
@@ -107,9 +156,10 @@ public class ProcessTestView extends JFrame implements MouseListener {
 		pnlTasks = new JPanel();
 		scTasks = new JScrollPane();
 		tbTasks = new ProcessTable();
-		scVariables = new JScrollPane();
+		scVariablesMain = new JScrollPane();
 		pnlVariables = new JPanel();
-		tbVariables = new JTable();
+		scVariables = new JScrollPane();
+		tbVariables = new VariablesTable();
 		scParseVariables = new JScrollPane();
 		pnlParseVariables = new JPanel();
 		tfParseVariables = new JTextField();
@@ -165,18 +215,23 @@ public class ProcessTestView extends JFrame implements MouseListener {
 			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 			new Insets(0, 0, 5, 0), 0, 0));
 
-		//======== scVariables ========
+		//======== scVariablesMain ========
 		{
 
 			//======== pnlVariables ========
 			{
 				pnlVariables.setBorder(new TitledBorder("Variablen"));
 				pnlVariables.setLayout(new BorderLayout());
-				pnlVariables.add(tbVariables, BorderLayout.CENTER);
+
+				//======== scVariables ========
+				{
+					scVariables.setViewportView(tbVariables);
+				}
+				pnlVariables.add(scVariables, BorderLayout.CENTER);
 			}
-			scVariables.setViewportView(pnlVariables);
+			scVariablesMain.setViewportView(pnlVariables);
 		}
-		contentPane.add(scVariables, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0,
+		contentPane.add(scVariablesMain, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0,
 			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 			new Insets(0, 0, 5, 0), 0, 0));
 
@@ -221,9 +276,10 @@ public class ProcessTestView extends JFrame implements MouseListener {
 	private JPanel pnlTasks;
 	private JScrollPane scTasks;
 	private ProcessTable tbTasks;
-	private JScrollPane scVariables;
+	private JScrollPane scVariablesMain;
 	private JPanel pnlVariables;
-	private JTable tbVariables;
+	private JScrollPane scVariables;
+	private VariablesTable tbVariables;
 	private JScrollPane scParseVariables;
 	private JPanel pnlParseVariables;
 	private JTextField tfParseVariables;

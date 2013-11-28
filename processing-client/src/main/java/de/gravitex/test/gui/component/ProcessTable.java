@@ -1,4 +1,4 @@
-package de.gravitex.test.gui;
+package de.gravitex.test.gui.component;
 
 import java.util.List;
 
