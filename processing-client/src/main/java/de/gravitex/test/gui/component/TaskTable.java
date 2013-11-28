@@ -7,27 +7,28 @@ import javax.swing.table.DefaultTableModel;
 
 import org.activiti.engine.task.Task;
 
-public class ProcessTable extends JTable {
+public class TaskTable extends JTable {
 
 	private static final long serialVersionUID = 1L;
 	
 	private List<Task> taskModel;
 	
-	public ProcessTable() {
+	public TaskTable() {
 		super();
 	}
 
 	public void setData(List<Task> tasks) {
 		this.taskModel = tasks;
-		Object[][] rowData = new Object[tasks.size()][2];
+		Object[][] rowData = new Object[tasks.size()][3];
 		Object[] singleRow = null;
 		int rowIndex = 0;
 		for (Task task : tasks) {
-			singleRow = new Object[] {task.getName(), task.getProcessInstanceId()};
+//			singleRow = new Object[] {task.getName(), "Jemanden", task.getProcessInstanceId()};
+			singleRow = new Object[] {task.getName(), task.getOwner(), task.getProcessInstanceId()};
 			rowData[rowIndex] = singleRow;
 			rowIndex++;
 		}
-		Object[] columnNames = { "Name der Aufgabe", "Prozess-ID" };
+		Object[] columnNames = { "Name der Aufgabe", "Zugewiesen an", "Prozess-ID" };
 		DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
 		setModel(model);
 	}

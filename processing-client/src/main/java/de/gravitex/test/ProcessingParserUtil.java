@@ -5,6 +5,7 @@ import java.util.HashMap;
 import de.gravitex.test.parsers.AbstractValueParser;
 import de.gravitex.test.parsers.BooleanValueParser;
 import de.gravitex.test.parsers.IntegerValueParser;
+import de.gravitex.test.parsers.LongValueParser;
 import de.gravitex.test.parsers.StringValueParser;
 
 
@@ -15,6 +16,7 @@ public class ProcessingParserUtil {
 		parsers.put(Boolean.class, new BooleanValueParser());
 		parsers.put(Integer.class, new IntegerValueParser());
 		parsers.put(String.class, new StringValueParser());
+		parsers.put(Long.class, new LongValueParser());
 	}
 
 	public static ProcessVariableDTO parseVariable(String variableDescription) throws Exception {

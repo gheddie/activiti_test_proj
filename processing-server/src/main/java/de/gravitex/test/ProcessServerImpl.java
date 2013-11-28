@@ -9,7 +9,6 @@ import java.util.Map;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
 import org.activiti.engine.task.Task;
 
 public class ProcessServerImpl extends UnicastRemoteObject implements ProcessServerRemote {
@@ -27,17 +26,11 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 		processEngine = ProcessEngines.getDefaultProcessEngine();
 	}
 
-	public void startProcessInstance(String processName, String processId) throws RemoteException {
+	public void startProcessInstance(String processName, String processId, HashMap<String, Object> variables) throws RemoteException {
 		RepositoryService repositoryService = processEngine.getRepositoryService();
 		repositoryService.createDeployment().addClasspathResource("de/gravitex/testdefinitions/"+processName+".bpmn20.xml").deploy();
 		//start process instance
-		Map<String, Object> variables = new HashMap<String, Object>();
-		variables.put("employeeName", "Kermit");
-		variables.put("numberOfDays", new Integer(4));
-		variables.put("vacationMotivation", "I'm really tired!");
-		RuntimeService runtimeService = processEngine.getRuntimeService();
-		runtimeService.startProcessInstanceByKey(processId, variables);
-		
+		processEngine.getRuntimeService().startProcessInstanceByKey(processId, variables);
 		System.out.println("process instance '"+processId+"' started.");
 	}
 	
@@ -48,5 +41,9 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 	
 	public List<Task> getTasksForUserGroup(String groupName) throws RemoteException {
 		return processEngine.getTaskService().createTaskQuery().taskCandidateGroup(groupName).list();
+	}
+
+	public List<Task> getAllTasks() throws RemoteException {
+		return processEngine.getTaskService().createTaskQuery().list();
 	}
 }

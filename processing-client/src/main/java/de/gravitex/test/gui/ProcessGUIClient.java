@@ -32,7 +32,7 @@ import org.w3c.dom.NodeList;
 
 import de.gravitex.test.ProcessServerRemote;
 import de.gravitex.test.RMIConstants;
-import de.gravitex.test.gui.component.ProcessTable;
+import de.gravitex.test.gui.component.TaskTable;
 
 public class ProcessGUIClient extends JFrame implements MouseListener {
 
@@ -46,7 +46,7 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 	
 	private JButton btnfinishTask;
 
-	private ProcessTable tbProcesses;
+	private TaskTable tbProcesses;
 	
 	private JScrollPane scProcesses;
 	
@@ -75,7 +75,7 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {
-					processServer.startProcessInstance("VacationRequest", "vacationRequest");
+					processServer.startProcessInstance("VacationRequest", "vacationRequest", null);
 //					processServer.startProcessInstance("SimpleVacationRequest", "vacationRequest");
 				} catch (RemoteException e) {
 					e.printStackTrace();
@@ -118,7 +118,7 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 			}
 		});
 		// ------------------------------------------------		
-		tbProcesses = new ProcessTable();
+		tbProcesses = new TaskTable();
 		tbProcesses.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  
 		scProcesses = new JScrollPane(tbProcesses);
 		tbProcesses.addMouseListener(this);

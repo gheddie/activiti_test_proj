@@ -8,7 +8,7 @@ import de.gravitex.test.gui.ProcessTestView;
 public class ProcessingTestClientStarter {
 
 	public static void main(String[] args) throws RemoteException, NotBoundException {
-		new ProcessTestView().setVisible(true);
+		new ProcessTestView("management").setVisible(true);
 		//---
 //		ParserUtil.parseVariable("vacationApproved#true#java.lang.Boolean");
 	}

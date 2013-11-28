@@ -38,7 +38,7 @@ import de.gravitex.test.ProcessServerRemote;
 import de.gravitex.test.ProcessVariableDTO;
 import de.gravitex.test.ProcessingParserUtil;
 import de.gravitex.test.RMIConstants;
-import de.gravitex.test.gui.component.ProcessTable;
+import de.gravitex.test.gui.component.TaskTable;
 import de.gravitex.test.gui.component.VariablesTable;
 
 public class ProcessTestView extends JFrame implements MouseListener {
@@ -50,11 +50,15 @@ public class ProcessTestView extends JFrame implements MouseListener {
 	private Task selectedTask;
 	
 	private List<ProcessVariableDTO> processVariables;
+
+	/** Die angemeldete Benutzergruppe */
+	private String groupName;
 	
-	public ProcessTestView() {
+	public ProcessTestView(String groupName) {
+		this.groupName = groupName;
 		initComponents();
 		setSize(800, 600);
-		setTitle("Prozess-Steuerung");
+		setTitle("Prozess-Steuerung (angemeldet: "+groupName+")");
 		init();
 		putListeners();
 	}
@@ -63,9 +67,9 @@ public class ProcessTestView extends JFrame implements MouseListener {
 		btnStartInstance.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					processServer.startProcessInstance("VacationRequest", "vacationRequest");
+					processServer.startProcessInstance("VacationRequest", "vacationRequest", getProcessVariables());
 				} catch (RemoteException e1) {
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(ProcessTestView.this, "Unable to start process instance : " + e1.getMessage());
 				}
 			}
 		});
@@ -117,8 +121,8 @@ public class ProcessTestView extends JFrame implements MouseListener {
 		tbTasks.addMouseListener(this);
 	}
 	
-	private Map<String, Object> getProcessVariables() {
-		Map<String, Object> variables = new HashMap<>();
+	private HashMap<String, Object> getProcessVariables() {
+		HashMap<String, Object> variables = new HashMap<>();
 		for (ProcessVariableDTO dto : processVariables) {
 			variables.put(dto.getFieldName(), dto.getFieldValue());
 		}
@@ -131,7 +135,8 @@ public class ProcessTestView extends JFrame implements MouseListener {
 	
 	private void fillTasks() {
 		try {
-			tbTasks.setData(processServer.getTasksForUserGroup("management"));
+//			tbTasks.setData(processServer.getTasksForUserGroup("management"));
+			tbTasks.setData(processServer.getAllTasks());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}				
@@ -161,7 +166,7 @@ public class ProcessTestView extends JFrame implements MouseListener {
 		scTasksMain = new JScrollPane();
 		pnlTasks = new JPanel();
 		scTasks = new JScrollPane();
-		tbTasks = new ProcessTable();
+		tbTasks = new TaskTable();
 		scVariablesMain = new JScrollPane();
 		pnlVariables = new JPanel();
 		scVariables = new JScrollPane();
@@ -281,7 +286,7 @@ public class ProcessTestView extends JFrame implements MouseListener {
 	private JScrollPane scTasksMain;
 	private JPanel pnlTasks;
 	private JScrollPane scTasks;
-	private ProcessTable tbTasks;
+	private TaskTable tbTasks;
 	private JScrollPane scVariablesMain;
 	private JPanel pnlVariables;
 	private JScrollPane scVariables;
