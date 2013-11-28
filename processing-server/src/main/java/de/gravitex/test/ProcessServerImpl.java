@@ -46,7 +46,7 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 		processEngine.getTaskService().complete(taskId, taskVariables);
 	}
 	
-	public List<Task> getTaskyForUserGroup(String groupName) throws RemoteException {
+	public List<Task> getTasksForUserGroup(String groupName) throws RemoteException {
 		return processEngine.getTaskService().createTaskQuery().taskCandidateGroup(groupName).list();
 	}
 }

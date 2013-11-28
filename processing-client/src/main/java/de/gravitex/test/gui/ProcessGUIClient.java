@@ -1,6 +1,7 @@
 package de.gravitex.test.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -14,8 +15,10 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.xml.parsers.DocumentBuilder;
@@ -45,6 +48,8 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 	private ProcessTable tbProcesses;
 	
 	private JScrollPane scProcesses;
+	
+	private JTextArea taVariables;
 
 	protected String taskToResume;
 
@@ -69,8 +74,8 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {
-//					processServer.startProcessInstance("VacationRequest", "vacationRequest");
-					processServer.startProcessInstance("SimpleVacationRequest", "vacationRequest");
+					processServer.startProcessInstance("VacationRequest", "vacationRequest");
+//					processServer.startProcessInstance("SimpleVacationRequest", "vacationRequest");
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
@@ -81,7 +86,7 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 		btnFetchTasks.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					List<Task> openTasks = processServer.getTaskyForUserGroup(ProcessGUIClient.this.groupName);
+					List<Task> openTasks = processServer.getTasksForUserGroup(ProcessGUIClient.this.groupName);
 					System.out.println(openTasks.size() + " open tasks.");
 					for (Task task : openTasks) {
 						System.out.println(task.getName() + "[" + task.getId() + "] (process id:"+task.getProcessInstanceId()+")");
@@ -97,14 +102,17 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 		btnfinishTask.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (selectedTask == null) {
+					JOptionPane.showMessageDialog(ProcessGUIClient.this, "No task selected ---> returning.");
 					return;
 				}
 				try {
 					processServer.completeTask(selectedTask.getId(), null);
 					fillTasks();
+					
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(ProcessGUIClient.this, "Could not finish task : " + e1.getMessage());
+				} finally {
 					selectedTask = null;
-				} catch (RemoteException e1) {
-					e1.printStackTrace();
 				}
 			}
 		});
@@ -120,12 +128,16 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 		tbMain.add(btnfinishTask);
 		add(tbMain, BorderLayout.NORTH);
 		// ------------------------------------------------
+		taVariables = new JTextArea();
+		taVariables.setMinimumSize(new Dimension(100, 150));
+		add(taVariables, BorderLayout.SOUTH);
+		// ------------------------------------------------
 		setVisible(true);
 	}
 	
 	private void fillTasks() {
 		try {
-			tbProcesses.setData(processServer.getTaskyForUserGroup(groupName));
+			tbProcesses.setData(processServer.getTasksForUserGroup(groupName));
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}				

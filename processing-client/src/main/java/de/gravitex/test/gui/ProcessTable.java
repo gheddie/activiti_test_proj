@@ -12,6 +12,10 @@ public class ProcessTable extends JTable {
 	private static final long serialVersionUID = 1L;
 	
 	private List<Task> taskModel;
+	
+	public ProcessTable() {
+		super();
+	}
 
 	public void setData(List<Task> tasks) {
 		this.taskModel = tasks;

@@ -13,5 +13,5 @@ public interface ProcessServerRemote extends Remote {
 	
 	public void completeTask(String taskId, Map<String, Object> taskVariables) throws RemoteException;
 	
-	public List<Task> getTaskyForUserGroup(String groupName) throws RemoteException;
+	public List<Task> getTasksForUserGroup(String groupName) throws RemoteException;
 }
