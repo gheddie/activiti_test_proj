@@ -10,6 +10,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.*;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -28,6 +29,7 @@ public class ProcessLogin extends JDialog {
 		super(new JDialog());
 		initComponents();
 		setSize(300, 150);
+		setTitle("Prozess-Steuerung");
 		putListener();
 	}
 
@@ -35,9 +37,9 @@ public class ProcessLogin extends JDialog {
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String userName = tfUsername.getText();
-				if ((userName == null) || (userName.length() == 0)) {
-					return;
-				}
+//				if ((userName == null) || (userName.length() == 0)) {
+//					return;
+//				}
 				setVisible(false);				
 				new EnhancedProcessTestView(userName).setVisible(true);
 			}
@@ -46,6 +48,7 @@ public class ProcessLogin extends JDialog {
 
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+		label1 = new JLabel();
 		pnlCredentials = new JPanel();
 		lblUsername = new JLabel();
 		tfUsername = new JTextField();
@@ -56,10 +59,16 @@ public class ProcessLogin extends JDialog {
 		//======== this ========
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new GridBagLayout());
-		((GridBagLayout)contentPane.getLayout()).columnWidths = new int[] {0, 0};
+		((GridBagLayout)contentPane.getLayout()).columnWidths = new int[] {0, 0, 0};
 		((GridBagLayout)contentPane.getLayout()).rowHeights = new int[] {0, 0, 0};
-		((GridBagLayout)contentPane.getLayout()).columnWeights = new double[] {1.0, 1.0E-4};
+		((GridBagLayout)contentPane.getLayout()).columnWeights = new double[] {0.0, 1.0, 1.0E-4};
 		((GridBagLayout)contentPane.getLayout()).rowWeights = new double[] {1.0, 0.0, 1.0E-4};
+
+		//---- label1 ----
+		label1.setIcon(new ImageIcon(getClass().getResource("/gfx/splash_big.png")));
+		contentPane.add(label1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+			new Insets(0, 0, 5, 5), 0, 0));
 
 		//======== pnlCredentials ========
 		{
@@ -88,13 +97,13 @@ public class ProcessLogin extends JDialog {
 				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
 		}
-		contentPane.add(pnlCredentials, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+		contentPane.add(pnlCredentials, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
 			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 			new Insets(0, 0, 5, 0), 0, 0));
 
 		//---- btnLogin ----
 		btnLogin.setText("Login");
-		contentPane.add(btnLogin, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+		contentPane.add(btnLogin, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0,
 			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 			new Insets(0, 0, 0, 0), 0, 0));
 		pack();
@@ -103,6 +112,7 @@ public class ProcessLogin extends JDialog {
 	}
 
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+	private JLabel label1;
 	private JPanel pnlCredentials;
 	private JLabel lblUsername;
 	private JTextField tfUsername;

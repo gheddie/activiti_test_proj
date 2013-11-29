@@ -4,7 +4,7 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class java.awt.GridBagLayout ) {
-			"$columnSpecs": "0:1.0"
+			"$columnSpecs": "0, 0:1.0"
 			"$rowSpecs": "0:1.0, 0"
 			"$hGap": 5
 			"$vGap": 5
@@ -12,6 +12,10 @@ new FormModel {
 			"$alignTop": true
 		} ) {
 			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label1"
+				"icon": new com.jformdesigner.model.SwingIcon( 0, "/gfx/splash_big.png" )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
 				"$columnSpecs": "0, 0:1.0"
 				"$rowSpecs": "0, 0"
@@ -43,12 +47,15 @@ new FormModel {
 					"gridx": 1
 					"gridy": 1
 				} )
-			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridx": 1
+			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "btnLogin"
 				"text": "Login"
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 				"gridy": 1
+				"gridwidth": 2
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )

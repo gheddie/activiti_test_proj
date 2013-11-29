@@ -62,7 +62,11 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 		this.groupName = groupName;
 		initComponents();
 		setSize(800, 600);
-		setTitle("Prozess-Steuerung (angemeldet: "+groupName+")");
+		if ((groupName == null) || (groupName.length() == 0)) {
+			setTitle("Prozess-Steuerung (angemeldet: ADMIN)");	
+		} else {
+			setTitle("Prozess-Steuerung (angemeldet: "+groupName+")");
+		}
 		init();
 		putListeners();
 		fillVariableTypes();
@@ -166,10 +170,15 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 	
 	private void fillTasks() {
 		try {
-			tbTasks.setData(processServer.getTasksForUserGroup(groupName));
-//			tbTasks.setData(processServer.getAllTasks());
+			List<Task> openTasks = null;
+			if ((groupName == null) || (groupName.length() == 0)) {
+				openTasks = processServer.getAllTasks();
+			} else {
+				openTasks = processServer.getTasksForUserGroup(groupName);
+			}
+			tbTasks.setData(openTasks);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "Error : " + e.getMessage());
 		}				
 	}
 
