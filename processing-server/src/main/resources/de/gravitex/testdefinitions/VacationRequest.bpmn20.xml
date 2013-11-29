@@ -31,9 +31,6 @@
     <sequenceFlow id="flow4" sourceRef="sendApprovalMail" targetRef="theEnd1"></sequenceFlow>
     <endEvent id="theEnd1"></endEvent>
     <sequenceFlow id="flow5" sourceRef="requestApprovedDecision" targetRef="adjustVacationRequestTask">
-      <extensionElements>
-        <activiti:executionListener event="take" class="de.gravitex.test.action.NotApprovedAction"></activiti:executionListener>
-      </extensionElements>
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${vacationApproved == 'false'}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="adjustVacationRequestTask" name="Adjust vacation request" activiti:assignee="${employeeName}">
@@ -47,6 +44,7 @@
           <activiti:value id="true" name="Yes"></activiti:value>
           <activiti:value id="false" name="No"></activiti:value>
         </activiti:formProperty>
+        <activiti:taskListener event="create" class="de.gravitex.test.action.NotApprovedTaskListener"></activiti:taskListener>
       </extensionElements>
     </userTask>
     <sequenceFlow id="flow6" sourceRef="adjustVacationRequestTask" targetRef="resendRequestDecision"></sequenceFlow>

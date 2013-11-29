@@ -97,6 +97,7 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					processServer.startProcessInstance("VacationRequest", "vacationRequest", getProcessVariables());
+//					processServer.startProcessInstance("JobAppliance", "process_pool1", getProcessVariables());
 				} catch (RemoteException e1) {
 					JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "Unable to start process instance : " + e1.getMessage());
 				}
