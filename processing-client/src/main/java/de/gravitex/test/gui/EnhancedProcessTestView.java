@@ -19,10 +19,10 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import javax.swing.*;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -37,7 +37,6 @@ import org.activiti.engine.task.Task;
 
 import de.gravitex.test.ProcessServerRemote;
 import de.gravitex.test.ProcessVariableDTO;
-import de.gravitex.test.ProcessingParserUtil;
 import de.gravitex.test.RMIConstants;
 import de.gravitex.test.gui.component.TaskTable;
 import de.gravitex.test.gui.component.VariablesTable;

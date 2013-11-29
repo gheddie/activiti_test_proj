@@ -36,7 +36,7 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 	
 	public void completeTask(String taskId, Map<String, Object> taskVariables) throws RemoteException {
 		System.out.println("completing task '"+taskId+"'...");
-		if (taskVariables != null) {
+		if ((taskVariables != null) && (taskVariables.size() > 0)) {
 			System.out.println("provided variables:");
 			int index = 0;
 			for (String key: taskVariables.keySet()) {
