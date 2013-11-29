@@ -20,7 +20,6 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -135,8 +134,8 @@ public class ProcessTestView extends JFrame implements MouseListener {
 	
 	private void fillTasks() {
 		try {
-//			tbTasks.setData(processServer.getTasksForUserGroup("management"));
-			tbTasks.setData(processServer.getAllTasks());
+			tbTasks.setData(processServer.getTasksForUserGroup(groupName));
+//			tbTasks.setData(processServer.getAllTasks());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}				

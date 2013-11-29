@@ -1,0 +1,120 @@
+JFDML JFormDesigner: "5.1.0.0.51" Java: "1.7.0_17" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.GridBagLayout ) {
+			"$columnSpecs": "0:1.0"
+			"$rowSpecs": "33, 0:1.0, 0:1.0, 0"
+			"$hGap": 5
+			"$vGap": 5
+			"$alignLeft": true
+			"$alignTop": true
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JToolBar", new FormLayoutManager( class javax.swing.JToolBar ) ) {
+				name: "tbMain"
+				"floatable": false
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "btnFetchTasks"
+					"text": "Tasks holen"
+					"icon": new com.jformdesigner.model.SwingIcon( 0, "/gfx/fetch_tasks.png" )
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "btnFinishTask"
+					"text": "Task abschliessen"
+					"icon": new com.jformdesigner.model.SwingIcon( 0, "/gfx/finish_task.png" )
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "cbProcessDefinitions"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "btnStartInstance"
+					"text": "Instanz starten"
+					"icon": new com.jformdesigner.model.SwingIcon( 0, "/gfx/start_instance.png" )
+				} )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+				"$columnSpecs": "0:1.0"
+				"$rowSpecs": "0:1.0"
+				"$hGap": 5
+				"$vGap": 5
+				"$alignLeft": true
+				"$alignTop": true
+			} ) {
+				name: "pnlTasks"
+				"border": new javax.swing.border.TitledBorder( "Offene Aufgaben" )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scTasks"
+					add( new FormComponent( "de.gravitex.test.gui.component.TaskTable" ) {
+						name: "tbTasks"
+					} )
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 1
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+				"$columnSpecs": "0:1.0"
+				"$rowSpecs": "0:1.0"
+				"$hGap": 5
+				"$vGap": 5
+				"$alignLeft": true
+				"$alignTop": true
+			} ) {
+				name: "pnlVariables"
+				"border": new javax.swing.border.TitledBorder( "Variablen" )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scVariables"
+					add( new FormComponent( "de.gravitex.test.gui.component.VariablesTable" ) {
+						name: "tbVariables"
+					} )
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 2
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+				"$columnSpecs": "0:1.0, 0:1.0, 0:1.0, 0, 0"
+				"$rowSpecs": "0"
+				"$hGap": 5
+				"$vGap": 5
+				"$alignLeft": true
+				"$alignTop": true
+			} ) {
+				name: "pnlVariableParser"
+				"border": new javax.swing.border.TitledBorder( "Variablen editieren" )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "tfVariableName"
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "tfVariableValue"
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+					"gridx": 1
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "cbVariableTypes"
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+					"gridx": 2
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "btnAddVariable"
+					"text": "Hinzufügen"
+					"icon": new com.jformdesigner.model.SwingIcon( 0, "/gfx/add_variable.png" )
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+					"gridx": 3
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "btnResetVariables"
+					"text": "Alle löschen"
+					"icon": new com.jformdesigner.model.SwingIcon( 0, "/gfx/clear_variables.png" )
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+					"gridx": 4
+				} )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}

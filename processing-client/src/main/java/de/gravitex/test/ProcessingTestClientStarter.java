@@ -3,13 +3,11 @@ package de.gravitex.test;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
-import de.gravitex.test.gui.ProcessTestView;
+import de.gravitex.test.gui.login.ProcessLogin;
 
 public class ProcessingTestClientStarter {
 
 	public static void main(String[] args) throws RemoteException, NotBoundException {
-		new ProcessTestView("management").setVisible(true);
-		//---
-//		ParserUtil.parseVariable("vacationApproved#true#java.lang.Boolean");
+		new ProcessLogin().setVisible(true);
 	}
 }
