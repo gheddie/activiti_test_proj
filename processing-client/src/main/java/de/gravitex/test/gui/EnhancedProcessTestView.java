@@ -10,6 +10,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.rmi.NotBoundException;
@@ -19,6 +21,7 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -33,6 +36,7 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.border.TitledBorder;
 
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 
 import de.gravitex.test.ProcessServerRemote;
@@ -53,6 +57,8 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 	private Task selectedTask;
 	
 	private List<ProcessVariableDTO> processVariables;
+	
+	private ProcessDefinition selectedProcessDefinition;
 
 	/** Die angemeldete Benutzergruppe */
 	private String groupName;
@@ -83,6 +89,7 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 		try {
 			registry = LocateRegistry.getRegistry("localhost", RMIConstants.RMI_PORT);
 			processServer = (ProcessServerRemote) registry.lookup(RMIConstants.RMI_ID);
+			fillProcessDefinitions();
 		} catch (RemoteException | NotBoundException e) {
 			// e.printStackTrace();
 			System.out.println("Fehler beim Initialisieren : " + e.getMessage());
@@ -91,12 +98,32 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 		processVariables = new ArrayList<>();
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void fillProcessDefinitions() {
+		try {
+			List<ProcessDefinition> deployedDefinitions = processServer.queryDeployedProcessDefinitions();
+			System.out.println("process server has " + deployedDefinitions.size() + " process definitions deployed.");
+			Vector<ProcessDefinition> processDefinitionItems = new Vector<>();
+			processDefinitionItems.add(null);
+			for (ProcessDefinition processDefinition : deployedDefinitions) {
+				processDefinitionItems.add(processDefinition);
+			}
+			ComboBoxModel model = new DefaultComboBoxModel<>(processDefinitionItems);
+			cbProcessDefinitions.setModel(model);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void putListeners() {
 		btnStartInstance.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (selectedProcessDefinition == null) {
+					JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "Select a process definition!");
+					return;
+				}
 				try {
-					processServer.startProcessInstance("VacationRequest", "vacationRequest", getProcessVariables());
-//					processServer.startProcessInstance("JobAppliance", "process_pool1", getProcessVariables());
+					processServer.startProcessInstance(selectedProcessDefinition.getKey(), getProcessVariables());
 				} catch (RemoteException e1) {
 					JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "Unable to start process instance : " + e1.getMessage());
 				}
@@ -152,6 +179,13 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 				fillVariables();
 			}
 		});		
+		//---
+		cbProcessDefinitions.addItemListener(new ItemListener() {
+			@SuppressWarnings("unchecked")
+			public void itemStateChanged(ItemEvent e) {
+				selectedProcessDefinition = (ProcessDefinition) ((JComboBox<ProcessDefinition>) e.getSource()).getSelectedItem();
+			}
+		});
 		//---
 		tbTasks.addMouseListener(this);
 	}

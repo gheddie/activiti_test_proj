@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngines;
-import org.activiti.engine.RepositoryService;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 
 public class ProcessServerImpl extends UnicastRemoteObject implements ProcessServerRemote {
@@ -20,18 +20,25 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 	protected ProcessServerImpl() throws RemoteException {
 		super();
 		initProcessEngine();
+		triggerDeployments();
 	}
 	
+	private void triggerDeployments() {
+		triggerDeployment("VacationRequest");
+		triggerDeployment("JobAppliance");
+	}
+
+	private void triggerDeployment(String processName) {
+		processEngine.getRepositoryService().createDeployment().addClasspathResource("de/gravitex/testdefinitions/"+processName+".bpmn20.xml").deploy();
+	}
+
 	private void initProcessEngine() {
 		processEngine = ProcessEngines.getDefaultProcessEngine();
 	}
 
-	public void startProcessInstance(String processName, String processId, HashMap<String, Object> variables) throws RemoteException {
-		RepositoryService repositoryService = processEngine.getRepositoryService();
-		repositoryService.createDeployment().addClasspathResource("de/gravitex/testdefinitions/"+processName+".bpmn20.xml").deploy();
-		//start process instance
-		processEngine.getRuntimeService().startProcessInstanceByKey(processId, variables);
-		System.out.println("process instance '"+processId+"' started.");
+	public void startProcessInstance(String processDefinitionKey, HashMap<String, Object> processVariables) throws RemoteException {
+		processEngine.getRuntimeService().startProcessInstanceByKey(processDefinitionKey, processVariables);
+		System.out.println("process instance '"+processDefinitionKey+"' started.");
 	}
 	
 	public void completeTask(String taskId, Map<String, Object> taskVariables) throws RemoteException {
@@ -55,5 +62,13 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 
 	public List<Task> getAllTasks() throws RemoteException {
 		return processEngine.getTaskService().createTaskQuery().list();
+	}
+
+	public void claimTask(String taskId, String userName) throws RemoteException {
+		// TODO claim a task before executing it!!
+	}
+	
+	public List<ProcessDefinition> queryDeployedProcessDefinitions() throws RemoteException {
+		return processEngine.getRepositoryService().createProcessDefinitionQuery().list();
 	}
 }

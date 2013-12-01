@@ -6,15 +6,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 
 public interface ProcessServerRemote extends Remote {
 
-	public void startProcessInstance(String processName, String processId, HashMap<String, Object> variables) throws RemoteException;
+	public void startProcessInstance(String processDefinitionKey, HashMap<String, Object> processVariables) throws RemoteException;
 	
 	public void completeTask(String taskId, Map<String, Object> taskVariables) throws RemoteException;
 	
 	public List<Task> getTasksForUserGroup(String groupName) throws RemoteException;
 	
 	public List<Task> getAllTasks() throws RemoteException;
+	
+	public void claimTask(String taskId, String userName) throws RemoteException;
+	
+	public List<ProcessDefinition> queryDeployedProcessDefinitions() throws RemoteException;
 }

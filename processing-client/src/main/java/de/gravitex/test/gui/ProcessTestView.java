@@ -65,11 +65,11 @@ public class ProcessTestView extends JFrame implements MouseListener {
 	private void putListeners() {
 		btnStartInstance.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					processServer.startProcessInstance("VacationRequest", "vacationRequest", getProcessVariables());
-				} catch (RemoteException e1) {
-					JOptionPane.showMessageDialog(ProcessTestView.this, "Unable to start process instance : " + e1.getMessage());
-				}
+//				try {
+//					processServer.startProcessInstance("VacationRequest", "vacationRequest", getProcessVariables());
+//				} catch (RemoteException e1) {
+//					JOptionPane.showMessageDialog(ProcessTestView.this, "Unable to start process instance : " + e1.getMessage());
+//				}
 			}
 		});
 		//---

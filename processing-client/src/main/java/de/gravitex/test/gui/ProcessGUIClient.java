@@ -74,12 +74,7 @@ public class ProcessGUIClient extends JFrame implements MouseListener {
 		btnStart = new JButton("start");
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				try {
-					processServer.startProcessInstance("VacationRequest", "vacationRequest", null);
-//					processServer.startProcessInstance("SimpleVacationRequest", "vacationRequest");
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				//...
 			}
 		});
 		// ------------------------------------------------
