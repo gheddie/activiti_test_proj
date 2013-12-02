@@ -23,12 +23,11 @@ public class TaskTable extends JTable {
 		Object[] singleRow = null;
 		int rowIndex = 0;
 		for (Task task : tasks) {
-//			singleRow = new Object[] {task.getName(), "Jemanden", task.getProcessInstanceId()};
-			singleRow = new Object[] {task.getName(), task.getOwner(), task.getProcessInstanceId()};
+			singleRow = new Object[] {task.getId(), task.getName(), task.getOwner(), task.getAssignee(), task.getProcessInstanceId()};
 			rowData[rowIndex] = singleRow;
 			rowIndex++;
 		}
-		Object[] columnNames = { "Name der Aufgabe", "Zugewiesen an", "Prozess-ID" };
+		Object[] columnNames = { "ID", "Name der Aufgabe", "Besitzer", "Zugewiesen an", "Prozess-ID" };
 		DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
 		setModel(model);
 	}

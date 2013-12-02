@@ -25,6 +25,11 @@ new FormModel {
 					"text": "Task abschliessen"
 					"icon": new com.jformdesigner.model.SwingIcon( 0, "/gfx/finish_task.png" )
 				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "btnClaimTask"
+					"text": "Task reservieren"
+					"icon": new com.jformdesigner.model.SwingIcon( 0, "/gfx/claim_task.png" )
+				} )
 				add( new FormComponent( "javax.swing.JComboBox" ) {
 					name: "cbProcessDefinitions"
 				} )

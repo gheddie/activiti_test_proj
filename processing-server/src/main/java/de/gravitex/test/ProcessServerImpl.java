@@ -65,7 +65,7 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 	}
 
 	public void claimTask(String taskId, String userName) throws RemoteException {
-		// TODO claim a task before executing it!!
+		processEngine.getTaskService().claim(taskId, null);
 	}
 	
 	public List<ProcessDefinition> queryDeployedProcessDefinitions() throws RemoteException {

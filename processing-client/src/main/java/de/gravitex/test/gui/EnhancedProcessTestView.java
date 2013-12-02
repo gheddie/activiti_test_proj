@@ -66,7 +66,7 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 	public EnhancedProcessTestView(String groupName) {
 		this.groupName = groupName;
 		initComponents();
-		setSize(800, 600);
+		setSize(900, 600);
 		if ((groupName == null) || (groupName.length() == 0)) {
 			setTitle("Prozess-Steuerung (angemeldet: ADMIN)");	
 		} else {
@@ -136,10 +136,27 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 			}
 		});
 		//---
+		btnClaimTask.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (selectedTask == null) {
+					JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "No task ot claim selected ---> returning.");
+					return;
+				}
+				System.out.println("claiming task with id '"+selectedTask.getId()+"'.");
+				try {
+					processServer.claimTask(selectedTask.getId(), null);
+				} catch (RemoteException e1) {
+					JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "Could not claim task : " + e1.getMessage());
+				} finally {
+					selectedTask = null;
+				}
+			}
+		});	
+		//---
 		btnFinishTask.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (selectedTask == null) {
-					JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "No task selected ---> returning.");
+					JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "No task to finish selected ---> returning.");
 					return;
 				}
 				try {
@@ -221,6 +238,7 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 		tbMain = new JToolBar();
 		btnFetchTasks = new JButton();
 		btnFinishTask = new JButton();
+		btnClaimTask = new JButton();
 		cbProcessDefinitions = new JComboBox();
 		btnStartInstance = new JButton();
 		pnlTasks = new JPanel();
@@ -257,6 +275,11 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 			btnFinishTask.setText("Task abschliessen");
 			btnFinishTask.setIcon(new ImageIcon(getClass().getResource("/gfx/finish_task.png")));
 			tbMain.add(btnFinishTask);
+
+			//---- btnClaimTask ----
+			btnClaimTask.setText("Task reservieren");
+			btnClaimTask.setIcon(new ImageIcon(getClass().getResource("/gfx/claim_task.png")));
+			tbMain.add(btnClaimTask);
 			tbMain.add(cbProcessDefinitions);
 
 			//---- btnStartInstance ----
@@ -354,6 +377,7 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 	private JToolBar tbMain;
 	private JButton btnFetchTasks;
 	private JButton btnFinishTask;
+	private JButton btnClaimTask;
 	private JComboBox cbProcessDefinitions;
 	private JButton btnStartInstance;
 	private JPanel pnlTasks;
