@@ -36,72 +36,60 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.border.TitledBorder;
 
+import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 
 import de.gravitex.test.ProcessServerRemote;
 import de.gravitex.test.ProcessVariableDTO;
 import de.gravitex.test.RMIConstants;
+import de.gravitex.test.core.ProcessingClientSingleton;
 import de.gravitex.test.gui.component.TaskTable;
 import de.gravitex.test.gui.component.VariablesTable;
+import de.gravitex.test.gui.login.ActivitiCredentials;
 
 /**
  * @author User #1
  */
 public class EnhancedProcessTestView extends JFrame implements MouseListener {
-	
+
 	private static final long serialVersionUID = 1L;
-	
-	private ProcessServerRemote processServer;
-	
+
 	private Task selectedTask;
-	
+
 	private List<ProcessVariableDTO> processVariables;
-	
+
 	private ProcessDefinition selectedProcessDefinition;
 
-	/** Die angemeldete Benutzergruppe */
-	private String groupName;
-	
-	public EnhancedProcessTestView(String groupName) {
-		this.groupName = groupName;
+	private ActivitiCredentials credentials;
+
+	public EnhancedProcessTestView() {
 		initComponents();
 		setSize(900, 600);
-		if ((groupName == null) || (groupName.length() == 0)) {
-			setTitle("Prozess-Steuerung (angemeldet: ADMIN)");	
-		} else {
-			setTitle("Prozess-Steuerung (angemeldet: "+groupName+")");
-		}
+		User loggedInUser = ProcessingClientSingleton.getLoggedInUser();
+		String userAsString = loggedInUser.getLastName() + ", " + loggedInUser.getFirstName();
+		setTitle("Prozess-Steuerung (angemeldet: " + userAsString + ")");
 		init();
 		putListeners();
 		fillVariableTypes();
+		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void fillVariableTypes() {
-		ComboBoxModel model = new DefaultComboBoxModel<>(new Object[] {ProcessVariableType.BOOLEAN, ProcessVariableType.INTEGER, ProcessVariableType.LONG, ProcessVariableType.STRING});		
+		ComboBoxModel model = new DefaultComboBoxModel<>(new Object[] { ProcessVariableType.BOOLEAN, ProcessVariableType.INTEGER, ProcessVariableType.LONG, ProcessVariableType.STRING });
 		cbVariableTypes.setModel(model);
 	}
 
 	private void init() {
-		//process engine
-		Registry registry = null;
-		try {
-			registry = LocateRegistry.getRegistry("localhost", RMIConstants.RMI_PORT);
-			processServer = (ProcessServerRemote) registry.lookup(RMIConstants.RMI_ID);
-			fillProcessDefinitions();
-		} catch (RemoteException | NotBoundException e) {
-			// e.printStackTrace();
-			System.out.println("Fehler beim Initialisieren : " + e.getMessage());
-		}
-		//other stuff
+		fillProcessDefinitions();
 		processVariables = new ArrayList<>();
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void fillProcessDefinitions() {
 		try {
-			List<ProcessDefinition> deployedDefinitions = processServer.queryDeployedProcessDefinitions();
+			List<ProcessDefinition> deployedDefinitions = ProcessingClientSingleton.getInstance().queryDeployedProcessDefinitions();
 			System.out.println("process server has " + deployedDefinitions.size() + " process definitions deployed.");
 			Vector<ProcessDefinition> processDefinitionItems = new Vector<>();
 			processDefinitionItems.add(null);
@@ -123,36 +111,36 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 					return;
 				}
 				try {
-					processServer.startProcessInstance(selectedProcessDefinition.getKey(), getProcessVariables());
+					ProcessingClientSingleton.getInstance().startProcessInstance(selectedProcessDefinition.getKey(), getProcessVariables());
 				} catch (RemoteException e1) {
 					JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "Unable to start process instance : " + e1.getMessage());
 				}
 			}
 		});
-		//---
+		// ---
 		btnFetchTasks.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				fillTasks();
 			}
 		});
-		//---
+		// ---
 		btnClaimTask.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (selectedTask == null) {
 					JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "No task ot claim selected ---> returning.");
 					return;
 				}
-				System.out.println("claiming task with id '"+selectedTask.getId()+"'.");
+				System.out.println("claiming task with id '" + selectedTask.getId() + "'.");
 				try {
-					processServer.claimTask(selectedTask.getId(), null);
+					ProcessingClientSingleton.getInstance().claimTask(selectedTask.getId());
 				} catch (RemoteException e1) {
 					JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "Could not claim task : " + e1.getMessage());
 				} finally {
 					selectedTask = null;
 				}
 			}
-		});	
-		//---
+		});
+		// ---
 		btnFinishTask.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (selectedTask == null) {
@@ -160,17 +148,17 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 					return;
 				}
 				try {
-					processServer.completeTask(selectedTask.getId(), getProcessVariables());
+					ProcessingClientSingleton.getInstance().completeTask(selectedTask.getId(), getProcessVariables());
 					fillTasks();
-					
+
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "Could not finish task : " + e1.getMessage());
 				} finally {
 					selectedTask = null;
 				}
 			}
-		});		
-		//---
+		});
+		// ---
 		btnAddVariable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("adding variable...");
@@ -187,30 +175,30 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 				processVariables.add(new ProcessVariableDTO(variableName, variableValue, ((ProcessVariableType) cbVariableTypes.getSelectedItem()).asClass()));
 				fillVariables();
 			}
-		});		
-		//---
+		});
+		// ---
 		btnResetVariables.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("reset variables...");
 				processVariables.clear();
 				fillVariables();
 			}
-		});		
-		//---
+		});
+		// ---
 		cbProcessDefinitions.addItemListener(new ItemListener() {
 			@SuppressWarnings("unchecked")
 			public void itemStateChanged(ItemEvent e) {
 				selectedProcessDefinition = (ProcessDefinition) ((JComboBox<ProcessDefinition>) e.getSource()).getSelectedItem();
 			}
 		});
-		//---
+		// ---
 		tbTasks.addMouseListener(this);
 	}
-	
+
 	private void fillVariables() {
-		tbVariables.setData(processVariables);				
+		tbVariables.setData(processVariables);
 	}
-	
+
 	private HashMap<String, Object> getProcessVariables() {
 		HashMap<String, Object> variables = new HashMap<>();
 		for (ProcessVariableDTO dto : processVariables) {
@@ -218,23 +206,19 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 		}
 		return variables;
 	}
-	
+
 	private void fillTasks() {
 		try {
-			List<Task> openTasks = null;
-			if ((groupName == null) || (groupName.length() == 0)) {
-				openTasks = processServer.getAllTasks();
-			} else {
-				openTasks = processServer.getTasksForUserGroup(groupName);
-			}
-			tbTasks.setData(openTasks);
+//			tbTasks.setData(ProcessingClientSingleton.getInstance().queryTasksByLoggedInUser());
+			tbTasks.setData(ProcessingClientSingleton.getInstance().getAllTasks());
 		} catch (RemoteException e) {
-			JOptionPane.showMessageDialog(EnhancedProcessTestView.this, "Error : " + e.getMessage());
-		}				
+			e.printStackTrace();
+		}
 	}
 
 	private void initComponents() {
-		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+		// JFormDesigner - Component initialization - DO NOT MODIFY
+		// //GEN-BEGIN:initComponents
 		tbMain = new JToolBar();
 		btnFetchTasks = new JButton();
 		btnFinishTask = new JButton();
@@ -254,126 +238,106 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 		btnAddVariable = new JButton();
 		btnResetVariables = new JButton();
 
-		//======== this ========
+		// ======== this ========
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new GridBagLayout());
-		((GridBagLayout)contentPane.getLayout()).columnWidths = new int[] {0, 0};
-		((GridBagLayout)contentPane.getLayout()).rowHeights = new int[] {38, 0, 0, 0, 0};
-		((GridBagLayout)contentPane.getLayout()).columnWeights = new double[] {1.0, 1.0E-4};
-		((GridBagLayout)contentPane.getLayout()).rowWeights = new double[] {0.0, 1.0, 1.0, 0.0, 1.0E-4};
+		((GridBagLayout) contentPane.getLayout()).columnWidths = new int[] { 0, 0 };
+		((GridBagLayout) contentPane.getLayout()).rowHeights = new int[] { 38, 0, 0, 0, 0 };
+		((GridBagLayout) contentPane.getLayout()).columnWeights = new double[] { 1.0, 1.0E-4 };
+		((GridBagLayout) contentPane.getLayout()).rowWeights = new double[] { 0.0, 1.0, 1.0, 0.0, 1.0E-4 };
 
-		//======== tbMain ========
+		// ======== tbMain ========
 		{
 			tbMain.setFloatable(false);
 
-			//---- btnFetchTasks ----
+			// ---- btnFetchTasks ----
 			btnFetchTasks.setText("Tasks holen");
 			btnFetchTasks.setIcon(new ImageIcon(getClass().getResource("/gfx/fetch_tasks.png")));
 			tbMain.add(btnFetchTasks);
 
-			//---- btnFinishTask ----
+			// ---- btnFinishTask ----
 			btnFinishTask.setText("Task abschliessen");
 			btnFinishTask.setIcon(new ImageIcon(getClass().getResource("/gfx/finish_task.png")));
 			tbMain.add(btnFinishTask);
 
-			//---- btnClaimTask ----
+			// ---- btnClaimTask ----
 			btnClaimTask.setText("Task reservieren");
 			btnClaimTask.setIcon(new ImageIcon(getClass().getResource("/gfx/claim_task.png")));
 			tbMain.add(btnClaimTask);
 			tbMain.add(cbProcessDefinitions);
 
-			//---- btnStartInstance ----
+			// ---- btnStartInstance ----
 			btnStartInstance.setText("Instanz starten");
 			btnStartInstance.setIcon(new ImageIcon(getClass().getResource("/gfx/start_instance.png")));
 			tbMain.add(btnStartInstance);
 		}
-		contentPane.add(tbMain, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-			new Insets(0, 0, 5, 0), 0, 0));
+		contentPane.add(tbMain, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 5, 0), 0, 0));
 
-		//======== pnlTasks ========
+		// ======== pnlTasks ========
 		{
 			pnlTasks.setBorder(new TitledBorder("Offene Aufgaben"));
 			pnlTasks.setLayout(new GridBagLayout());
-			((GridBagLayout)pnlTasks.getLayout()).columnWidths = new int[] {0, 0};
-			((GridBagLayout)pnlTasks.getLayout()).rowHeights = new int[] {0, 0};
-			((GridBagLayout)pnlTasks.getLayout()).columnWeights = new double[] {1.0, 1.0E-4};
-			((GridBagLayout)pnlTasks.getLayout()).rowWeights = new double[] {1.0, 1.0E-4};
+			((GridBagLayout) pnlTasks.getLayout()).columnWidths = new int[] { 0, 0 };
+			((GridBagLayout) pnlTasks.getLayout()).rowHeights = new int[] { 0, 0 };
+			((GridBagLayout) pnlTasks.getLayout()).columnWeights = new double[] { 1.0, 1.0E-4 };
+			((GridBagLayout) pnlTasks.getLayout()).rowWeights = new double[] { 1.0, 1.0E-4 };
 
-			//======== scTasks ========
+			// ======== scTasks ========
 			{
 				scTasks.setViewportView(tbTasks);
 			}
-			pnlTasks.add(scTasks, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 0), 0, 0));
+			pnlTasks.add(scTasks, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		}
-		contentPane.add(pnlTasks, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
-			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-			new Insets(0, 0, 5, 0), 0, 0));
+		contentPane.add(pnlTasks, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 5, 0), 0, 0));
 
-		//======== pnlVariables ========
+		// ======== pnlVariables ========
 		{
 			pnlVariables.setBorder(new TitledBorder("Variablen"));
 			pnlVariables.setLayout(new GridBagLayout());
-			((GridBagLayout)pnlVariables.getLayout()).columnWidths = new int[] {0, 0};
-			((GridBagLayout)pnlVariables.getLayout()).rowHeights = new int[] {0, 0};
-			((GridBagLayout)pnlVariables.getLayout()).columnWeights = new double[] {1.0, 1.0E-4};
-			((GridBagLayout)pnlVariables.getLayout()).rowWeights = new double[] {1.0, 1.0E-4};
+			((GridBagLayout) pnlVariables.getLayout()).columnWidths = new int[] { 0, 0 };
+			((GridBagLayout) pnlVariables.getLayout()).rowHeights = new int[] { 0, 0 };
+			((GridBagLayout) pnlVariables.getLayout()).columnWeights = new double[] { 1.0, 1.0E-4 };
+			((GridBagLayout) pnlVariables.getLayout()).rowWeights = new double[] { 1.0, 1.0E-4 };
 
-			//======== scVariables ========
+			// ======== scVariables ========
 			{
 				scVariables.setViewportView(tbVariables);
 			}
-			pnlVariables.add(scVariables, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 0), 0, 0));
+			pnlVariables.add(scVariables, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		}
-		contentPane.add(pnlVariables, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
-			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-			new Insets(0, 0, 5, 0), 0, 0));
+		contentPane.add(pnlVariables, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 5, 0), 0, 0));
 
-		//======== pnlVariableParser ========
+		// ======== pnlVariableParser ========
 		{
 			pnlVariableParser.setBorder(new TitledBorder("Variablen editieren"));
 			pnlVariableParser.setLayout(new GridBagLayout());
-			((GridBagLayout)pnlVariableParser.getLayout()).columnWidths = new int[] {0, 0, 0, 0, 0, 0};
-			((GridBagLayout)pnlVariableParser.getLayout()).rowHeights = new int[] {0, 0};
-			((GridBagLayout)pnlVariableParser.getLayout()).columnWeights = new double[] {1.0, 1.0, 1.0, 0.0, 0.0, 1.0E-4};
-			((GridBagLayout)pnlVariableParser.getLayout()).rowWeights = new double[] {0.0, 1.0E-4};
-			pnlVariableParser.add(tfVariableName, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 5), 0, 0));
-			pnlVariableParser.add(tfVariableValue, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 5), 0, 0));
-			pnlVariableParser.add(cbVariableTypes, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 5), 0, 0));
+			((GridBagLayout) pnlVariableParser.getLayout()).columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
+			((GridBagLayout) pnlVariableParser.getLayout()).rowHeights = new int[] { 0, 0 };
+			((GridBagLayout) pnlVariableParser.getLayout()).columnWeights = new double[] { 1.0, 1.0, 1.0, 0.0, 0.0, 1.0E-4 };
+			((GridBagLayout) pnlVariableParser.getLayout()).rowWeights = new double[] { 0.0, 1.0E-4 };
+			pnlVariableParser.add(tfVariableName, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 5), 0, 0));
+			pnlVariableParser.add(tfVariableValue, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 5), 0, 0));
+			pnlVariableParser.add(cbVariableTypes, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 5), 0, 0));
 
-			//---- btnAddVariable ----
+			// ---- btnAddVariable ----
 			btnAddVariable.setText("Hinzuf\u00fcgen");
 			btnAddVariable.setIcon(new ImageIcon(getClass().getResource("/gfx/add_variable.png")));
-			pnlVariableParser.add(btnAddVariable, new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 5), 0, 0));
+			pnlVariableParser.add(btnAddVariable, new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 5), 0, 0));
 
-			//---- btnResetVariables ----
+			// ---- btnResetVariables ----
 			btnResetVariables.setText("Alle l\u00f6schen");
 			btnResetVariables.setIcon(new ImageIcon(getClass().getResource("/gfx/clear_variables.png")));
-			pnlVariableParser.add(btnResetVariables, new GridBagConstraints(4, 0, 1, 1, 0.0, 0.0,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 0), 0, 0));
+			pnlVariableParser.add(btnResetVariables, new GridBagConstraints(4, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		}
-		contentPane.add(pnlVariableParser, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0,
-			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-			new Insets(0, 0, 0, 0), 0, 0));
+		contentPane.add(pnlVariableParser, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		pack();
 		setLocationRelativeTo(getOwner());
-		// JFormDesigner - End of component initialization  //GEN-END:initComponents
+		// JFormDesigner - End of component initialization
+		// //GEN-END:initComponents
 	}
 
-	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+	// JFormDesigner - Variables declaration - DO NOT MODIFY
+	// //GEN-BEGIN:variables
 	private JToolBar tbMain;
 	private JButton btnFetchTasks;
 	private JButton btnFinishTask;
@@ -392,10 +356,11 @@ public class EnhancedProcessTestView extends JFrame implements MouseListener {
 	private JComboBox cbVariableTypes;
 	private JButton btnAddVariable;
 	private JButton btnResetVariables;
-	// JFormDesigner - End of variables declaration  //GEN-END:variables
+
+	// JFormDesigner - End of variables declaration //GEN-END:variables
 
 	public void mouseClicked(MouseEvent e) {
-		selectedTask = tbTasks.getSelectedTask();	
+		selectedTask = tbTasks.getSelectedTask();
 	}
 
 	public void mousePressed(MouseEvent e) {

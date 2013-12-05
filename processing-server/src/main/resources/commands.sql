@@ -26,3 +26,17 @@ variable.type_ as VARIABLE_TYPE
 from act_ru_variable as variable
 inner join act_ru_execution as process_inst on (variable.execution_id_ = process_inst.id_)
 order by process_inst.id_ asc, variable.name_ asc
+
+---
+
+--Übersicht Benutzer und Gruppen
+select
+usergroup.name_ AS GROUP_NAME,
+usr.id_ AS USER_ID,
+usr.first_ AS USER_FIRSTNAME,
+usr.last_ AS USER_LASTNAME,
+usr.pwd_ AS USER_PASSWD
+from act_id_user usr
+inner join act_id_membership member on (member.user_id_ = usr.id_)
+inner join act_id_group usergroup on (usergroup.id_ = member.group_id_)
+order by usergroup.id_ asc

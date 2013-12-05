@@ -10,15 +10,20 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
+import de.gravitex.test.core.ProcessingClientSingleton;
 import de.gravitex.test.gui.EnhancedProcessTestView;
 
 public class ProcessLogin extends JDialog {
@@ -28,32 +33,53 @@ public class ProcessLogin extends JDialog {
 	public ProcessLogin() {
 		super(new JDialog());
 		initComponents();
-		setSize(300, 150);
+		setSize(640, 240);
 		setTitle("Prozess-Steuerung");
-		putListener();
+		putListeners();
+		init();
 	}
 
-	private void putListener() {
+	private void init() {
+		try {
+			ProcessingClientSingleton.getInstance().initProcessEngine();
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void putListeners() {
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String userName = tfUsername.getText();
-//				if ((userName == null) || (userName.length() == 0)) {
-//					return;
-//				}
-				setVisible(false);				
-				new EnhancedProcessTestView(userName).setVisible(true);
+				String userId = tfUserId.getText();
+				if ((userId == null) || (userId.length() == 0)) {
+					return;
+				}
+				String password = tfPassword.getText();
+				if ((password == null) || (password.length() == 0)) {
+					return;
+				}
+				try {
+					if (ProcessingClientSingleton.getInstance().authenticateUser(userId, password)) {
+						setVisible(false);
+						new EnhancedProcessTestView().setVisible(true);
+					} else {
+						JOptionPane.showMessageDialog(ProcessLogin.this, "Unable to authenticate user!");
+					}
+				} catch (RemoteException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 	}
 
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-		label1 = new JLabel();
+		lblSplash = new JLabel();
 		pnlCredentials = new JPanel();
-		lblUsername = new JLabel();
-		tfUsername = new JTextField();
+		lblUserId = new JLabel();
+		tfUserId = new JTextField();
 		lblPassword = new JLabel();
-		tfPassword = new JTextField();
+		tfPassword = new JPasswordField();
 		btnLogin = new JButton();
 
 		//======== this ========
@@ -64,9 +90,9 @@ public class ProcessLogin extends JDialog {
 		((GridBagLayout)contentPane.getLayout()).columnWeights = new double[] {0.0, 1.0, 1.0E-4};
 		((GridBagLayout)contentPane.getLayout()).rowWeights = new double[] {1.0, 0.0, 1.0E-4};
 
-		//---- label1 ----
-		label1.setIcon(new ImageIcon(getClass().getResource("/gfx/splash_big.png")));
-		contentPane.add(label1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+		//---- lblSplash ----
+		lblSplash.setIcon(new ImageIcon(getClass().getResource("/gfx/splash_big.png")));
+		contentPane.add(lblSplash, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
 			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 			new Insets(0, 0, 5, 5), 0, 0));
 
@@ -79,12 +105,12 @@ public class ProcessLogin extends JDialog {
 			((GridBagLayout)pnlCredentials.getLayout()).columnWeights = new double[] {0.0, 1.0, 1.0E-4};
 			((GridBagLayout)pnlCredentials.getLayout()).rowWeights = new double[] {0.0, 0.0, 1.0E-4};
 
-			//---- lblUsername ----
-			lblUsername.setText("Benutzername:");
-			pnlCredentials.add(lblUsername, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+			//---- lblUserId ----
+			lblUserId.setText("User-ID:");
+			pnlCredentials.add(lblUserId, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
 				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(0, 0, 5, 5), 0, 0));
-			pnlCredentials.add(tfUsername, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+			pnlCredentials.add(tfUserId, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
 				GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(0, 0, 5, 0), 0, 0));
 
@@ -112,12 +138,12 @@ public class ProcessLogin extends JDialog {
 	}
 
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-	private JLabel label1;
+	private JLabel lblSplash;
 	private JPanel pnlCredentials;
-	private JLabel lblUsername;
-	private JTextField tfUsername;
+	private JLabel lblUserId;
+	private JTextField tfUserId;
 	private JLabel lblPassword;
-	private JTextField tfPassword;
+	private JPasswordField tfPassword;
 	private JButton btnLogin;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 }
