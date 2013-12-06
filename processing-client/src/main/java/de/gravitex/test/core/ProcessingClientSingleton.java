@@ -63,14 +63,6 @@ public class ProcessingClientSingleton {
 		processServer.completeTask(taskId, processVariables);
 	}
 
-	public List<Task> getAllTasks() throws RemoteException {
-		return processServer.getAllTasks();
-	}
-
-	public List<Task> getTasksForUserGroup(String groupName) throws RemoteException {
-		return processServer.getTasksForUserGroup(groupName);
-	}
-
 	public boolean authenticateUser(String userId, String password) throws RemoteException {
 		List<User> usersById = processServer.queryUsersById(userId);
 		if ((usersById == null) || (usersById.size() == 0)) {
@@ -88,6 +80,10 @@ public class ProcessingClientSingleton {
 
 	public static User getLoggedInUser() {
 		return loggedInUser;
+	}
+	
+	public List<Task> queryGroupTasks() throws RemoteException {
+		return processServer.queryGroupTasks(loggedInUser);
 	}
 
 	public List<Task> queryTasksByLoggedInUser() throws RemoteException {

@@ -2,14 +2,13 @@ package de.gravitex.test;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
-import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -24,29 +23,8 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 	protected ProcessServerImpl() throws RemoteException {
 		super();
 		initProcessEngine();
-//		prepareH2dB();
 	}
 	
-	private void prepareH2dB() {
-		
-		//deployments
-//		triggerDeployment("VacationRequest");
-//		triggerDeployment("JobAppliance");
-		triggerDeployment("FinancialReport");
-		
-		IdentityService identityService = processEngine.getIdentityService();
-		
-		//users
-//		identityService.newUser("stefan");
-		
-		//users groups				
-		//...
-	}
-
-	private void triggerDeployment(String processName) {
-		processEngine.getRepositoryService().createDeployment().addClasspathResource("de/gravitex/testdefinitions/"+processName+".bpmn20.xml").deploy();
-	}
-
 	private void initProcessEngine() {
 		processEngine = ProcessEngineConfiguration.createStandaloneInMemProcessEngineConfiguration()
 				  .setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_FALSE)
@@ -77,15 +55,7 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 			System.out.println("provided variables:NONE!!");
 		}
 		processEngine.getTaskService().complete(taskId, taskVariables);
-	}
-	
-	public List<Task> getTasksForUserGroup(String groupName) throws RemoteException {
-		return processEngine.getTaskService().createTaskQuery().taskCandidateGroup(groupName).list();
-	}
-
-	public List<Task> getAllTasks() throws RemoteException {
-		return processEngine.getTaskService().createTaskQuery().list();
-	}
+	}	
 
 	public void claimTask(String taskId, String userId) throws RemoteException {
 		processEngine.getTaskService().claim(taskId, userId);
@@ -113,7 +83,16 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 		}
 		return userList;
 	}
-
+	
+	public List<Task> queryGroupTasks(User user) throws RemoteException {
+		List<Group> groupsByUser = processEngine.getIdentityService().createGroupQuery().groupMember(user.getId()).list();
+		List<Task> groupTasks = new ArrayList<>();
+		for (Group userGroup : groupsByUser) {
+			groupTasks.addAll(processEngine.getTaskService().createTaskQuery().taskCandidateGroup(userGroup.getId()).list());
+		}		
+		return groupTasks;
+	}
+	
 	public List<Task> queryTasksByUser(User user) throws RemoteException {
 		return processEngine.getTaskService().createTaskQuery().taskAssignee(user.getId()).list();
 	}

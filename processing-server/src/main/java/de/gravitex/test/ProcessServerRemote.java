@@ -17,10 +17,6 @@ public interface ProcessServerRemote extends Remote {
 	
 	public void completeTask(String taskId, Map<String, Object> taskVariables) throws RemoteException;
 	
-	public List<Task> getTasksForUserGroup(String groupName) throws RemoteException;
-	
-	public List<Task> getAllTasks() throws RemoteException;
-	
 	public void claimTask(String taskId, String userName) throws RemoteException;
 	
 	public List<ProcessDefinition> queryDeployedProcessDefinitions() throws RemoteException;
@@ -30,6 +26,8 @@ public interface ProcessServerRemote extends Remote {
 	public List<User> queryUsersByGroup(String groupName) throws RemoteException;
 	
 	public List<User> queryUsersById(String userId) throws RemoteException;
+	
+	public List<Task> queryGroupTasks(User user) throws RemoteException;
 
 	public List<Task> queryTasksByUser(User user) throws RemoteException;
 }

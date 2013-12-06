@@ -7,7 +7,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.activiti.engine.task.Task;
 
-public class TaskTable extends JTable {
+public abstract class TaskTable extends JTable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -35,4 +35,6 @@ public class TaskTable extends JTable {
 	public Task getSelectedTask() {
 		return taskModel.get(getSelectedRow());
 	}
+	
+	public abstract TableType getTableType();
 }
