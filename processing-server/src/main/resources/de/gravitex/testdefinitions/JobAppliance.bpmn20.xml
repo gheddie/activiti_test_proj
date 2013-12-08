@@ -45,9 +45,15 @@
     </endEvent>
     <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway" default="flow14"></exclusiveGateway>
     <sequenceFlow id="flow14" sourceRef="exclusivegateway4" targetRef="endevent2"></sequenceFlow>
-    <sequenceFlow id="flow15" sourceRef="exclusivegateway4" targetRef="exclusivegateway2">
+    <sequenceFlow id="flow15" sourceRef="exclusivegateway4" targetRef="timerintermediatecatchevent1">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${appointmentMade == 'false'}]]></conditionExpression>
     </sequenceFlow>
+    <intermediateCatchEvent id="timerintermediatecatchevent1" name="TimerCatchEvent">
+      <timerEventDefinition>
+        <timeDuration>PT1M</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="flow16" sourceRef="timerintermediatecatchevent1" targetRef="exclusivegateway2"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_jobAppliance">
     <bpmndi:BPMNPlane bpmnElement="jobAppliance" id="BPMNPlane_jobAppliance">
@@ -86,6 +92,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
         <omgdc:Bounds height="40.0" width="40.0" x="907.0" y="167.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="timerintermediatecatchevent1" id="BPMNShape_timerintermediatecatchevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="770.0" y="100.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="135.0" y="187.0"></omgdi:waypoint>
@@ -140,8 +149,12 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
         <omgdi:waypoint x="927.0" y="167.0"></omgdi:waypoint>
-        <omgdi:waypoint x="926.0" y="112.0"></omgdi:waypoint>
-        <omgdi:waypoint x="660.0" y="112.0"></omgdi:waypoint>
+        <omgdi:waypoint x="926.0" y="117.0"></omgdi:waypoint>
+        <omgdi:waypoint x="805.0" y="117.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="770.0" y="117.0"></omgdi:waypoint>
+        <omgdi:waypoint x="660.0" y="117.0"></omgdi:waypoint>
         <omgdi:waypoint x="660.0" y="167.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

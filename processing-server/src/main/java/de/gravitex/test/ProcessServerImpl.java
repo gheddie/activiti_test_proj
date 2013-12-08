@@ -26,15 +26,7 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 	}
 	
 	private void initProcessEngine() {
-		processEngine = ProcessEngineConfiguration.createStandaloneInMemProcessEngineConfiguration()
-				  .setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_FALSE)
-				  .setJdbcUrl("jdbc:postgresql://localhost/activiti_test")
-				  .setJdbcUsername("postgres")
-				  .setJdbcPassword("pgvedder")
-				  .setJobExecutorActivate(false)
-				  .setDatabaseSchemaUpdate("false")
-				  .buildProcessEngine();
-		System.out.println("init process engine : " + processEngine);
+		processEngine = ProcessEngineFactory.getDefaultProcessEngine();
 	}
 
 	public void startProcessInstance(String processDefinitionKey, HashMap<String, Object> processVariables) throws RemoteException {

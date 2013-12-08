@@ -3,7 +3,7 @@
   <process id="timerStartProcess" name="Timer Start Process" isExecutable="true">
     <startEvent id="timerstartevent1" name="Timer start">
       <timerEventDefinition>
-        <timeCycle>R4/2013-12-06T15:08/PT5M</timeCycle>
+        <timeCycle>R5/2013-12-08T21:17/PT1M</timeCycle>
       </timerEventDefinition>
     </startEvent>
     <userTask id="usertask1" name="Some Task" activiti:candidateGroups="humanResources"></userTask>
