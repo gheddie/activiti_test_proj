@@ -11,6 +11,7 @@
         <flowNodeRef>endevent4</flowNodeRef>
         <flowNodeRef>exclusivegateway3</flowNodeRef>
         <flowNodeRef>timerintermediatecatchevent1</flowNodeRef>
+        <flowNodeRef>exclusivegateway4</flowNodeRef>
       </lane>
       <lane id="humanResources" name="Human Resources">
         <flowNodeRef>startevent1</flowNodeRef>
@@ -19,6 +20,8 @@
         <flowNodeRef>makeAppointment</flowNodeRef>
         <flowNodeRef>exclusivegateway2</flowNodeRef>
         <flowNodeRef>endevent5</flowNodeRef>
+        <flowNodeRef>writeRejectionPooled</flowNodeRef>
+        <flowNodeRef>endevent6</flowNodeRef>
       </lane>
     </laneSet>
     <startEvent id="startevent1" name="Start"></startEvent>
@@ -50,14 +53,18 @@
     </subProcess>
     <sequenceFlow id="flow2" sourceRef="ReviewApplianceProcess" targetRef="meetOperatingDepartment"></sequenceFlow>
     <userTask id="handleReviewEscalation" name="Handle Review Escalation" activiti:candidateGroups="management"></userTask>
-    <userTask id="meetOperatingDepartment" name="Meet Operating Department" activiti:candidateGroups="management"></userTask>
+    <userTask id="meetOperatingDepartment" name="Meet Operating Department" activiti:candidateGroups="management">
+      <extensionElements>
+        <activiti:formProperty id="applierFits" type="boolean" required="true"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
     <boundaryEvent id="boundaryerror1" name="Error" attachedToRef="ReviewApplianceProcess">
       <errorEventDefinition></errorEventDefinition>
     </boundaryEvent>
     <sequenceFlow id="flow7" sourceRef="boundaryerror1" targetRef="handleReviewEscalation"></sequenceFlow>
     <endEvent id="endevent4" name="End"></endEvent>
     <sequenceFlow id="flow11" sourceRef="handleReviewEscalation" targetRef="endevent4"></sequenceFlow>
-    <sequenceFlow id="flow12" sourceRef="meetOperatingDepartment" targetRef="exclusivegateway3"></sequenceFlow>
+    <sequenceFlow id="flow12" sourceRef="meetOperatingDepartment" targetRef="exclusivegateway4"></sequenceFlow>
     <userTask id="makeAppointment" name="Make Appointment" activiti:candidateGroups="humanResources">
       <extensionElements>
         <activiti:formProperty id="appointmentMade" name="Appointment Made" type="boolean" required="true"></activiti:formProperty>
@@ -78,6 +85,14 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${appointmentMade == 'false'}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow17" sourceRef="timerintermediatecatchevent1" targetRef="exclusivegateway3"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway" default="flow20"></exclusiveGateway>
+    <userTask id="writeRejectionPooled" name="WriteRejection" activiti:candidateGroups="humanResources"></userTask>
+    <sequenceFlow id="flow18" sourceRef="exclusivegateway4" targetRef="writeRejectionPooled">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${applierFits == 'false'}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent6" name="End"></endEvent>
+    <sequenceFlow id="flow19" sourceRef="writeRejectionPooled" targetRef="endevent6"></sequenceFlow>
+    <sequenceFlow id="flow20" sourceRef="exclusivegateway4" targetRef="exclusivegateway3"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
     <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
@@ -115,7 +130,7 @@
         <omgdc:Bounds height="55.0" width="105.0" x="170.0" y="229.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="mainPool" id="BPMNShape_mainPool">
-        <omgdc:Bounds height="300.0" width="961.0" x="80.0" y="179.0"></omgdc:Bounds>
+        <omgdc:Bounds height="342.0" width="1091.0" x="80.0" y="179.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
         <omgdc:Bounds height="35.0" width="35.0" x="600.0" y="354.0"></omgdc:Bounds>
@@ -124,13 +139,13 @@
         <omgdc:Bounds height="35.0" width="35.0" x="560.0" y="239.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent5" id="BPMNShape_endevent5">
-        <omgdc:Bounds height="35.0" width="35.0" x="975.0" y="387.0"></omgdc:Bounds>
+        <omgdc:Bounds height="35.0" width="35.0" x="893.0" y="460.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="management" id="BPMNShape_management">
-        <omgdc:Bounds height="150.0" width="941.0" x="100.0" y="179.0"></omgdc:Bounds>
+        <omgdc:Bounds height="150.0" width="1071.0" x="100.0" y="179.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="humanResources" id="BPMNShape_humanResources">
-        <omgdc:Bounds height="150.0" width="941.0" x="100.0" y="329.0"></omgdc:Bounds>
+        <omgdc:Bounds height="192.0" width="1071.0" x="100.0" y="329.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="makeAppointment" id="BPMNShape_makeAppointment">
         <omgdc:Bounds height="55.0" width="105.0" x="760.0" y="377.0"></omgdc:Bounds>
@@ -143,6 +158,15 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="timerintermediatecatchevent1" id="BPMNShape_timerintermediatecatchevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="850.0" y="239.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="557.0" y="189.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="writeRejectionPooled" id="BPMNShape_writeRejectionPooled">
+        <omgdc:Bounds height="55.0" width="105.0" x="960.0" y="377.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent6" id="BPMNShape_endevent6">
+        <omgdc:Bounds height="35.0" width="35.0" x="995.0" y="460.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="185.0" y="404.0"></omgdi:waypoint>
@@ -193,13 +217,12 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
         <omgdi:waypoint x="222.0" y="229.0"></omgdi:waypoint>
-        <omgdi:waypoint x="223.0" y="203.0"></omgdi:waypoint>
-        <omgdi:waypoint x="720.0" y="203.0"></omgdi:waypoint>
-        <omgdi:waypoint x="720.0" y="236.0"></omgdi:waypoint>
+        <omgdi:waypoint x="223.0" y="209.0"></omgdi:waypoint>
+        <omgdi:waypoint x="557.0" y="209.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
-        <omgdi:waypoint x="930.0" y="404.0"></omgdi:waypoint>
-        <omgdi:waypoint x="975.0" y="404.0"></omgdi:waypoint>
+        <omgdi:waypoint x="910.0" y="424.0"></omgdi:waypoint>
+        <omgdi:waypoint x="910.0" y="460.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
         <omgdi:waypoint x="865.0" y="404.0"></omgdi:waypoint>
@@ -218,6 +241,19 @@
       <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
         <omgdi:waypoint x="850.0" y="256.0"></omgdi:waypoint>
         <omgdi:waypoint x="740.0" y="256.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="597.0" y="209.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1012.0" y="209.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1012.0" y="377.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="1012.0" y="432.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1012.0" y="460.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
+        <omgdi:waypoint x="597.0" y="209.0"></omgdi:waypoint>
+        <omgdi:waypoint x="720.0" y="236.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
