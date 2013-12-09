@@ -19,9 +19,13 @@ public class ProcessDeployer {
 	}
 
 	private void deploy() {
-		deploy("de/gravitex/testdefinitions/TimerStart.bpmn20.xml");
+//		deploy("de/gravitex/testdefinitions/TimerStart.bpmn20.xml");
 //		deploy("de/gravitex/testdefinitions/TimerBoundaryTest.bpmn20.xml");
 //		deploy("de/gravitex/testdefinitions/JobAppliance.bpmn20.xml");
+//		deploy("de/gravitex/testdefinitions/reviewSalesLead.bpmn20.xml");
+//		deploy("de/gravitex/testdefinitions/MessagingTest.bpmn20.xml");
+//		deploy("de/gravitex/testdefinitions/MessagingTestStarter.bpmn20.xml");
+		deploy("de/gravitex/testdefinitions/JobAppliancePooled.bpmn20.xml");
 	}
 
 	private void deploy(String deploymentPath) {
