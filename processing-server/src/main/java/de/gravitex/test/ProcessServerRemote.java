@@ -30,4 +30,6 @@ public interface ProcessServerRemote extends Remote {
 	public List<Task> queryGroupTasks(User user) throws RemoteException;
 
 	public List<Task> queryTasksByUser(User user) throws RemoteException;
+
+	public List<Task> queryTasksNative(String queryString, HashMap<String, Object> parameters) throws RemoteException;
 }

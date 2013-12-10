@@ -38,6 +38,7 @@ import de.gravitex.test.gui.component.*;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskQuery;
 
 import de.gravitex.test.ProcessVariableDTO;
 import de.gravitex.test.core.ProcessingClientSingleton;

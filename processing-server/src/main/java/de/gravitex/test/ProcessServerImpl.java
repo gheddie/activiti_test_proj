@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.activiti.engine.ManagementService;
 import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskQuery;
 
 public class ProcessServerImpl extends UnicastRemoteObject implements ProcessServerRemote {
 
@@ -87,5 +89,14 @@ public class ProcessServerImpl extends UnicastRemoteObject implements ProcessSer
 	
 	public List<Task> queryTasksByUser(User user) throws RemoteException {
 		return processEngine.getTaskService().createTaskQuery().taskAssignee(user.getId()).list();
+	}
+
+	public List<Task> queryTasksNative(String queryString, HashMap<String, Object> parameters) throws RemoteException {
+		ManagementService managementService = processEngine.getManagementService();
+		NativeTaskQuery qry = processEngine.getTaskService().createNativeTaskQuery().sql(queryString);
+		for (String key : parameters.keySet()) {
+			qry.parameter(key, parameters.get(key));
+		}
+		return qry.list();
 	}
 }

@@ -14,6 +14,9 @@ insert into act_id_group (id_, rev_, name_, type_) values ('admin', 1, 'Admin', 
 --hr
 insert into act_id_group (id_, rev_, name_, type_) values ('humanResources', 1, 'HumanResources', 'assignment');
 
+--worksCouncil
+insert into act_id_group (id_, rev_, name_, type_) values ('worksCouncil', 1, 'Works Council', 'assignment');
+
 ---------------------------------------------------------------------------------------
 ---users
 ---------------------------------------------------------------------------------------
@@ -47,6 +50,7 @@ insert into act_id_membership (user_id_, group_id_) values ('elsie', 'accountanc
 
 --ted.admin
 insert into act_id_membership (user_id_, group_id_) values ('ted', 'admin');
+insert into act_id_membership (user_id_, group_id_) values ('ted', 'worksCouncil');
 
 --jenna.hr
 insert into act_id_membership (user_id_, group_id_) values ('jenna', 'humanResources');

@@ -11,6 +11,7 @@ import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskQuery;
 
 import de.gravitex.test.ProcessServerRemote;
 import de.gravitex.test.RMIConstants;
@@ -88,5 +89,9 @@ public class ProcessingClientSingleton {
 
 	public List<Task> queryTasksByLoggedInUser() throws RemoteException {
 		return processServer.queryTasksByUser(loggedInUser);
+	}
+
+	public List<Task> queryTasksNative(String queryString, HashMap<String, Object> parameters) throws RemoteException {
+		return processServer.queryTasksNative(queryString, parameters);
 	}
 }

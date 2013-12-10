@@ -23,7 +23,11 @@
         <flowNodeRef>endevent6</flowNodeRef>
       </lane>
     </laneSet>
-    <startEvent id="startevent1" name="Start"></startEvent>
+    <startEvent id="startevent1" name="Start">
+      <extensionElements>
+        <activiti:formProperty id="applianceKey" name="Appliance key" type="string" required="true"></activiti:formProperty>
+      </extensionElements>
+    </startEvent>
     <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="ReviewApplianceProcess"></sequenceFlow>
     <subProcess id="ReviewApplianceProcess" name="Review Appliance Process">
       <userTask id="reviewAppliance" name="Review Appliance" activiti:candidateGroups="humanResources">
@@ -76,11 +80,14 @@
     <sequenceFlow id="flow15" sourceRef="exclusivegateway3" targetRef="makeAppointment"></sequenceFlow>
     <intermediateCatchEvent id="timerintermediatecatchevent1" name="TimerCatchEvent">
       <timerEventDefinition>
-        <timeDuration>PT1M</timeDuration>
+        <timeDuration>PT5S</timeDuration>
       </timerEventDefinition>
     </intermediateCatchEvent>
     <sequenceFlow id="flow16" sourceRef="exclusivegateway2" targetRef="timerintermediatecatchevent1">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${appointmentMade == 'false'}]]></conditionExpression>
+      <extensionElements>
+        <activiti:executionListener event="take" class="de.gravitex.test.action.IncrementMissedAppointments"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${(appointmentMade == 'false') && (missedAppointmentCounter < 3)}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow17" sourceRef="timerintermediatecatchevent1" targetRef="exclusivegateway3"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway" default="flow20"></exclusiveGateway>
@@ -90,7 +97,14 @@
     </sequenceFlow>
     <endEvent id="endevent6" name="End"></endEvent>
     <sequenceFlow id="flow19" sourceRef="writeRejectionPooled" targetRef="endevent6"></sequenceFlow>
-    <sequenceFlow id="flow20" sourceRef="exclusivegateway4" targetRef="exclusivegateway3"></sequenceFlow>
+    <sequenceFlow id="flow20" sourceRef="exclusivegateway4" targetRef="exclusivegateway3">
+      <extensionElements>
+        <activiti:executionListener event="take" class="de.gravitex.test.action.PrepareMissedAppointments"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="flow21" sourceRef="exclusivegateway2" targetRef="writeRejectionPooled">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${(appointmentMade == 'false') && (missedAppointmentCounter == 3)}]]></conditionExpression>
+    </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
     <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
@@ -249,6 +263,10 @@
       <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
         <omgdi:waypoint x="597.0" y="209.0"></omgdi:waypoint>
         <omgdi:waypoint x="720.0" y="236.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
+        <omgdi:waypoint x="930.0" y="404.0"></omgdi:waypoint>
+        <omgdi:waypoint x="960.0" y="404.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

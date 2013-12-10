@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -37,6 +38,18 @@ public class ProcessLogin extends JDialog {
 		setTitle("Prozess-Steuerung");
 		putListeners();
 		init();
+		
+		testTaskQuery();
+	}
+
+	private void testTaskQuery() {
+		try {
+			HashMap<String, Object> parameter = new HashMap<>();
+			parameter.put("taskDefKey", "meetOperatingDepartment");
+			System.out.println(ProcessingClientSingleton.getInstance().queryTasksNative("SELECT * FROM ACT_RU_TASK T WHERE T.TASK_DEF_KEY_ = #{taskDefKey}", parameter).size());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void init() {
